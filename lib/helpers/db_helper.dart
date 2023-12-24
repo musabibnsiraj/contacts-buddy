@@ -35,8 +35,6 @@ class DB {
 
   static Future<List<Map<String, dynamic>>> getAll(String table) async {
     final db = await DB.database();
-    // final List<Map<String, Object?>> datas = await db.query(table);
-    // return datas.map((e) => TrackingsModel.fromMap(e)).toList();
     return db.query(table);
   }
 

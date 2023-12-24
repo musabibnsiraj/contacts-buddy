@@ -14,7 +14,7 @@ class ContactBuddy {
 
   factory ContactBuddy.fromJson(Map<String, dynamic> json) {
     return ContactBuddy(
-        id: json['_id'].toString(),
+        id: json['id'].toString(),
         firstname: json['firstname'].toString(),
         lastname: json['lastname'].toString(),
         phone: json['phone'].toString(),

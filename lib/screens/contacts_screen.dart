@@ -118,7 +118,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
     }
 
     return Scaffold(
-      appBar: appBar('Contact Buddy'),
+      appBar: appBar('Contacts Buddy'),
       body: SafeArea(
           child: Stack(
         children: [

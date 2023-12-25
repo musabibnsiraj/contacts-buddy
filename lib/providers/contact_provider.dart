@@ -29,7 +29,8 @@ class ContactProvider with ChangeNotifier {
         _isLoading = false;
         notifyListeners(); // Notify listeners after the asynchronous operation
       } catch (e) {
-        // Handle errors
+        // If an error occurs during the process, show an error message
+        Utill.showError("Error: $e");
       } finally {
         _isLoading = false;
         notifyListeners(); // Notify listeners after completing the operation (even if there's an error)
@@ -83,7 +84,6 @@ class ContactProvider with ChangeNotifier {
     } catch (e) {
       // If an error occurs during the process, show an error message
       Utill.showError("Error: $e");
-      // You might want to handle the error further or log it for debugging
       return null; // Indicate that there was an error while fetching the contact
     }
   }
@@ -113,7 +113,7 @@ class ContactProvider with ChangeNotifier {
     } catch (e) {
       // If an error occurs during the process, show an error message
       Utill.showError("Error: $e");
-      // You might want to handle the error further or log it for debugging
+      return null;
     }
   }
 
@@ -142,7 +142,6 @@ class ContactProvider with ChangeNotifier {
     } catch (e) {
       // If an error occurs during the process, show an error message
       Utill.showError("Error: $e");
-      // You might want to handle the error further or log it for debugging
       return -1; // Indicate that the update was not successful
     }
   }
@@ -163,7 +162,6 @@ class ContactProvider with ChangeNotifier {
     } catch (e) {
       // If an error occurs during the process, show an error message
       Utill.showError("Error: $e");
-      // You might want to handle the error further or log it for debugging
       return -1; // Indicate that the deletion was not successful
     }
   }

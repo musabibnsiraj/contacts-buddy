@@ -1,7 +1,6 @@
 import 'constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'show_alert_screen.dart';
 
 class Spinner extends StatelessWidget {
   const Spinner({Key? key}) : super(key: key);
@@ -9,43 +8,6 @@ class Spinner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(child: SpinKitCircle(color: appSpinColor));
-  }
-}
-
-class WSpinner extends StatelessWidget {
-  const WSpinner({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: SpinKitCircle(color: appWhite));
-  }
-}
-
-class SpinnerBG extends StatelessWidget {
-  const SpinnerBG({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black12.withOpacity(0.3),
-      child: const Center(
-        child: WSpinner(),
-      ),
-    );
-  }
-}
-
-extension ColorExtension on String {
-  toColor() {
-    try {
-      var hexString = this;
-      final buffer = StringBuffer();
-      if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
-      buffer.write(hexString.replaceFirst('#', ''));
-      return Color(int.parse(buffer.toString(), radix: 16));
-    } catch (e) {
-      return primaryAppColor;
-    }
   }
 }
 
@@ -65,62 +27,79 @@ AppBar appBar(String title, {List<Widget>? actionsWidget, double? elevation}) {
       actions: actionsWidget ?? []);
 }
 
-extension StringExtension on String {
-  String capitalize() {
-    return isEmpty ? this : this[0].toUpperCase() + substring(1);
+class PrimaryBtn extends StatelessWidget {
+  final String data;
+  final Color color;
+  final Color textColor;
+
+  const PrimaryBtn(
+      {Key? key,
+      required this.data,
+      required this.color,
+      this.textColor = Colors.white})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.4,
+      height: 60,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: ShapeDecoration(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(30)),
+        ),
+        color: color,
+      ),
+      child: Text(
+        data,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 16,
+          fontFamily: "Montserrat",
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
   }
 }
 
-showMsgBox(BuildContext context, String content, String title,
-    {String? btnName}) {
-  showDialog(
-      context: context,
-      builder: (context) {
-        return Showdialoguebox(
-          content: content,
-          title: title,
-          actions1: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Align(
-                  alignment: Alignment.center,
-                  child: InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: btnName != null
-                          ? Container(
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              height: 60,
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              decoration: ShapeDecoration(
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30)),
-                                ),
-                                color: primaryAppColor,
-                              ),
-                              child: Text(
-                                btnName,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontFamily: "Montserrat",
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            )
-                          : Container(
-                              width: MediaQuery.of(context).size.width * 0.5,
-                            ))),
-            )
-          ],
-        );
-      });
-}
+class Showdialoguebox extends StatelessWidget {
+  const Showdialoguebox(
+      {Key? key,
+      required this.title,
+      required this.content,
+      required this.actions1})
+      : super(key: key);
 
-BoxDecoration backgroundDecoration() {
-  return const BoxDecoration(
-      image: DecorationImage(
-          image: AssetImage('assets/background.jpg'), fit: BoxFit.cover));
+  final String title;
+  final String content;
+  final List<Widget> actions1;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      alignment: Alignment.center,
+      title: Text(
+        title,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: primaryAppColor,
+          fontSize: 24,
+          fontFamily: "Montserrat",
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      content: Text(
+        content,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 16,
+        ),
+      ),
+      backgroundColor: alertBoxBgColor,
+      actions: actions1,
+    );
+  }
 }

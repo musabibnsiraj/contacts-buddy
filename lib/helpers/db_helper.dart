@@ -43,7 +43,6 @@ class DB {
     final db = await DB.database();
     return db.query(
       table,
-      // columns: columns,
       where: where,
       whereArgs: whereArgs,
       limit: limit,
@@ -59,16 +58,5 @@ class DB {
   static Future<int> delete(String table, String where, List whereArgs) async {
     final db = await DB.database();
     return db.delete(table, where: where, whereArgs: whereArgs);
-  }
-
-  static Future<List<Map<String, dynamic>>> customQuery(
-      String sql, List<dynamic>? args) async {
-    final db = await DB.database();
-    return db.rawQuery(sql, args);
-  }
-
-  static Future<int> deleteall(String table) async {
-    final db = await DB.database();
-    return db.delete(table);
   }
 }

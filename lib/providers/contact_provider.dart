@@ -37,16 +37,6 @@ class ContactProvider with ChangeNotifier {
     });
   }
 
-  bool _phoneExists(dynamic phone, dynamic datas) {
-    if (phone != "") {
-      return datas.any((contact) =>
-          contact.phone == phone ||
-          contact.phone == phone.toString() ||
-          contact.phone.toString() == phone.toString());
-    }
-    return false;
-  }
-
   filterContacts(searchText, fillteredContacts) async {
     if (searchText != "") {
       List<ContactBuddy> filtered = [];
@@ -83,32 +73,98 @@ class ContactProvider with ChangeNotifier {
     });
   }
 
-  Future<void> getContactById(String id) async {
-    //
+  Future<Map<String, dynamic>?> getContactById(String id) async {
+    try {
+      List<Map<String, dynamic>> result =
+          await DB.getByWhere('contacts', null, 'id = ?', [id], 1);
+
+      // If a contact is found, return it; otherwise, return null
+      return result.isNotEmpty ? result.first : null;
+    } catch (e) {
+      // If an error occurs during the process, show an error message
+      Utill.showError("Error: $e");
+      // You might want to handle the error further or log it for debugging
+      return null; // Indicate that there was an error while fetching the contact
+    }
   }
 
-  Future<dynamic> addContact(String firstname, String lastname, String phone,
-      {String note = ""}) async {
+  Future<dynamic> addContact(
+      String firstname, String lastname, String phone, String? email) async {
     try {
+      // Create a Map to represent the contact information
       Map<String, dynamic> contact = {
         'firstname': firstname,
         'lastname': lastname,
         'phone': phone,
-        'note': note
+        'email': email ?? ""
       };
 
+      // Use the 'DB' object to insert the contact into the 'contacts' table
       await DB.insert('contacts', contact);
-      Utill.showInfo("Contact inserted succesfully..!");
+
+      // Fetch all contacts after inserting the new one
+      getAllContacts();
+
+      // Notify listeners about the change in data
+      notifyListeners();
+
+      // Return true to indicate that the contact was successfully added
+      return true;
     } catch (e) {
+      // If an error occurs during the process, show an error message
       Utill.showError("Error: $e");
+      // You might want to handle the error further or log it for debugging
     }
   }
 
-  Future<dynamic> updateContact(String id, Map<String, dynamic> data) async {
-    //
+  Future<int> updateContact(String id, Map<String, dynamic> data) async {
+    try {
+      // Create a Map to represent the updated contact information
+      Map<String, dynamic> updatedContact = {
+        'firstname': data['firstname'],
+        'lastname': data['lastname'],
+        'phone': data['phone'],
+        'email': data['email']
+      };
+
+      // Use the 'DB' object to update the contact in the 'contacts' table
+      int rowsAffected =
+          await DB.update('contacts', 'id = ?', [id], updatedContact);
+
+      // Fetch all contacts after updating
+      getAllContacts();
+
+      // Notify listeners about the change in data
+      notifyListeners();
+
+      // Return the number of rows affected to indicate that the contact was successfully updated
+      return rowsAffected;
+    } catch (e) {
+      // If an error occurs during the process, show an error message
+      Utill.showError("Error: $e");
+      // You might want to handle the error further or log it for debugging
+      return -1; // Indicate that the update was not successful
+    }
   }
 
-  Future<dynamic> deleteContact(String id) async {
-    //
+  Future<int> deleteContact(String id) async {
+    try {
+      // Use the 'DB' object to delete the contact in the 'contacts' table
+      int rowsAffected = await DB.delete('contacts', 'id = ?', [id]);
+
+      // Fetch all contacts after deleting
+      getAllContacts();
+
+      // Notify listeners about the change in data
+      notifyListeners();
+
+      // Return the number of rows affected to indicate that the contact was successfully deleted
+      return rowsAffected;
+    } catch (e) {
+      // If an error occurs during the process, show an error message
+      Utill.showError("Error: $e");
+      // You might want to handle the error further or log it for debugging
+      return -1; // Indicate that the deletion was not successful
+    }
   }
 }

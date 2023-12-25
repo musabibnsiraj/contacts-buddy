@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:contacts_buddy/helpers/utill.dart';
 import 'package:contacts_buddy/models/contact_buddy_model.dart';
 import 'package:contacts_buddy/providers/contact_provider.dart';
+import 'package:contacts_buddy/screens/add_new_contact_screen.dart';
+import 'package:contacts_buddy/screens/contact_detail_screen.dart';
 import '../../widgets/common_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +18,9 @@ class ContactsScreen extends StatefulWidget {
 
 class _ContactsScreenState extends State<ContactsScreen> {
   List<ContactBuddy> userContacts = [];
+  List<ContactBuddy> filteredContacts = [];
+  List<ContactBuddy> allContacts = [];
+  TextEditingController searchController = TextEditingController();
   bool loading = false;
 
   @override
@@ -26,6 +31,51 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
   init() async {
     await getAllContacts();
+    searchController.addListener(() {
+      filterContacts();
+    });
+  }
+
+  filterContacts() {
+    List<ContactBuddy> filtered = [];
+    filtered.addAll(userContacts);
+    if (searchController.text.isNotEmpty) {
+      filtered.retainWhere((contact) {
+        String searchTerm = searchController.text.toLowerCase();
+        String contactName =
+            '${contact.firstname.toLowerCase()} ${contact.lastname.toLowerCase()}';
+        bool matches = contactName.contains(searchTerm);
+        if (matches == true) {
+          return true;
+        }
+
+        String searchTermFlatten = flattenPhoneNumber(searchTerm);
+        if (searchTermFlatten.isEmpty) return false;
+
+        String contactPhone = flattenPhoneNumber(contact.phone);
+        contactPhone = contactPhone.replaceAll(" ", "");
+        searchTermFlatten = searchTermFlatten.replaceAll(" ", "");
+        matches = contactPhone.contains(searchTermFlatten);
+        if (matches == true) {
+          return true;
+        }
+
+        return false;
+      });
+      setState(() {
+        allContacts = filtered;
+      });
+    } else {
+      setState(() {
+        allContacts = userContacts;
+      });
+    }
+  }
+
+  String flattenPhoneNumber(String phoneStr) {
+    return phoneStr.replaceAllMapped(RegExp(r'^(\+)|\D'), (Match m) {
+      return m[0] == "+" ? "+" : "";
+    });
   }
 
   // Update your getAllContacts function
@@ -59,18 +109,31 @@ class _ContactsScreenState extends State<ContactsScreen> {
   @override
   Widget build(BuildContext context) {
     final contactProvider = Provider.of<ContactProvider>(context, listen: true);
-    final userContacts = contactProvider.getAllContact;
     final isLoading = contactProvider.isLoading;
+
+    bool isSearching = searchController.text.isNotEmpty;
+    if (!isSearching) {
+      userContacts = contactProvider.getAllContact;
+      allContacts = userContacts;
+    }
 
     return Scaffold(
       appBar: appBar('Contact Buddy'),
       body: SafeArea(
           child: Stack(
         children: [
+          const SizedBox(
+            height: 10,
+          ),
           Column(
             children: [
               ListTile(
-                onTap: () async {},
+                onTap: () async {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (context) {
+                    return const NewContactScreen();
+                  }));
+                },
                 leading: Container(
                   height: 52,
                   width: 52,
@@ -96,6 +159,22 @@ class _ContactsScreenState extends State<ContactsScreen> {
               const SizedBox(
                 height: 10,
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width - 10,
+                  child: TextField(
+                    controller: searchController,
+                    decoration: InputDecoration(
+                      labelText: 'Search Contacts',
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: appTextColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(
                 height: 10,
               ),
@@ -115,9 +194,9 @@ class _ContactsScreenState extends State<ContactsScreen> {
                   child: Scrollbar(
                 thumbVisibility: true,
                 child: ListView.builder(
-                  itemCount: userContacts.length,
+                  itemCount: allContacts.length,
                   itemBuilder: (ctx, i) {
-                    ContactBuddy c = userContacts.elementAt(i);
+                    ContactBuddy c = allContacts.elementAt(i);
                     return Dismissible(
                       key: UniqueKey(),
                       direction: DismissDirection.horizontal,
@@ -125,7 +204,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                           ? (direction) async {
                               setState(() {
                                 // Remove the item from the list.
-                                userContacts.removeAt(i);
+                                allContacts.removeAt(i);
                               });
                               await removeContact(c.id, context);
                             }
@@ -173,13 +252,19 @@ class _ContactsScreenState extends State<ContactsScreen> {
                           padding: const EdgeInsets.only(
                               top: 8.0, bottom: 8.0, left: 4, right: 4),
                           child: ListTile(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) {
+                                return ContactDetailScreen(contact: c);
+                              }));
+                            },
                             leading: CircleAvatar(
                                 backgroundColor: appGreen,
                                 child: Text(c.initials() ?? "")),
-                            trailing: Text(c.phone),
-                            title: Text(
-                              "${c.firstname} ${c.lastname}",
+                            title: Text("${c.firstname} ${c.lastname}"),
+                            subtitle: Text(
+                              c.phone,
+                              style: TextStyle(color: appTextColor),
                             ),
                           ),
                         ),

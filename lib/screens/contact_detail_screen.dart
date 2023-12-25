@@ -1,15 +1,14 @@
 import '../providers/contact_provider.dart';
 import '../widgets/common_widget.dart';
-import 'package:contacts_buddy/models/contact_buddy_model.dart';
+import 'package:contacts_buddy/models/contact_model.dart';
 import 'package:provider/provider.dart';
-import '../widgets/constant.dart';
-import '../../widgets/user_input_widget.dart';
+import '../constant.dart';
 import 'package:flutter/material.dart';
 
 class ContactDetailScreen extends StatefulWidget {
   const ContactDetailScreen({Key? key, required this.contact})
       : super(key: key);
-  final ContactBuddy contact;
+  final Contact contact;
   @override
   State<ContactDetailScreen> createState() => _ContactDetailScreenState();
 }

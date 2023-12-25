@@ -1,14 +1,14 @@
 import 'package:contacts_buddy/helpers/db_helper.dart';
 import 'package:contacts_buddy/helpers/utill.dart';
-import 'package:contacts_buddy/models/contact_buddy_model.dart';
+import 'package:contacts_buddy/models/contact_model.dart';
 import 'package:flutter/material.dart';
 
 class ContactProvider with ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  final List<ContactBuddy> _allContacts = [];
-  List<ContactBuddy> get getAllContact => [..._allContacts];
+  final List<Contact> _allContacts = [];
+  List<Contact> get getAllContact => [..._allContacts];
 
   Future<void> getAllContacts() async {
     // Ensure that the method is not called during the build phase
@@ -23,7 +23,7 @@ class ContactProvider with ChangeNotifier {
         _allContacts.clear();
 
         for (var contactMap in contacts) {
-          _allContacts.add(ContactBuddy.fromJson(contactMap));
+          _allContacts.add(Contact.fromJson(contactMap));
         }
 
         _isLoading = false;
@@ -39,7 +39,7 @@ class ContactProvider with ChangeNotifier {
 
   filterContacts(searchText, fillteredContacts) async {
     if (searchText != "") {
-      List<ContactBuddy> filtered = [];
+      List<Contact> filtered = [];
       filtered.addAll(fillteredContacts);
       filtered.retainWhere((contact) {
         String searchTerm = searchText.toLowerCase();

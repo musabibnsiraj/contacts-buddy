@@ -1,8 +1,7 @@
 import '../providers/contact_provider.dart';
 import '../widgets/common_widget.dart';
 import 'package:provider/provider.dart';
-import '../widgets/constant.dart';
-import '../../widgets/user_input_widget.dart';
+import '../constant.dart';
 import 'package:flutter/material.dart';
 
 class NewContactScreen extends StatefulWidget {

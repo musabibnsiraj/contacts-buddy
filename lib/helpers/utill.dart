@@ -1,4 +1,4 @@
-import 'package:contacts_buddy/widgets/constant.dart';
+import 'package:contacts_buddy/constant.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class Utill {

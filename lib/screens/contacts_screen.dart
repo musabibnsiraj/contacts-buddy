@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:contacts_buddy/helpers/utill.dart';
-import 'package:contacts_buddy/models/contact_buddy_model.dart';
+import 'package:contacts_buddy/models/contact_model.dart';
 import 'package:contacts_buddy/providers/contact_provider.dart';
 import 'package:contacts_buddy/screens/add_new_contact_screen.dart';
 import 'package:contacts_buddy/screens/contact_detail_screen.dart';
 import '../../widgets/common_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../widgets/constant.dart';
+import '../constant.dart';
 
 class ContactsScreen extends StatefulWidget {
   const ContactsScreen({Key? key}) : super(key: key);
@@ -17,9 +17,9 @@ class ContactsScreen extends StatefulWidget {
 }
 
 class _ContactsScreenState extends State<ContactsScreen> {
-  List<ContactBuddy> userContacts = [];
-  List<ContactBuddy> filteredContacts = [];
-  List<ContactBuddy> allContacts = [];
+  List<Contact> userContacts = [];
+  List<Contact> filteredContacts = [];
+  List<Contact> allContacts = [];
   TextEditingController searchController = TextEditingController();
   bool loading = false;
 
@@ -37,7 +37,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
   }
 
   filterContacts() {
-    List<ContactBuddy> filtered = [];
+    List<Contact> filtered = [];
     filtered.addAll(userContacts);
     if (searchController.text.isNotEmpty) {
       filtered.retainWhere((contact) {
@@ -196,7 +196,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                 child: ListView.builder(
                   itemCount: allContacts.length,
                   itemBuilder: (ctx, i) {
-                    ContactBuddy c = allContacts.elementAt(i);
+                    Contact c = allContacts.elementAt(i);
                     return Dismissible(
                       key: UniqueKey(),
                       direction: DismissDirection.horizontal,
